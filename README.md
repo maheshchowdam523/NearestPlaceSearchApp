@@ -6,8 +6,10 @@ After getting all the records, you can see that place in the maps.
 $ git clone https://github.com/maheshchowdam523/NearestPlaceSearchApp.git
 
 # To run the application:
-Import the code in Eclipse. 
+Import the code to Eclipse.
+
 Update the project by clicking Project -> Maven -> Update Project.
+
 Run the application by clicking Project -> Run as -> Run on Server.
 
 Access the deployed web application at: http://localhost:8080/NearestPlacesApp/
