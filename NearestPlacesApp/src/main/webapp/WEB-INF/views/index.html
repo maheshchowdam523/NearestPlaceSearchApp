@@ -7,7 +7,7 @@
       <title>Nearest Places</title>
       <style>
          #map {
-         height: 100%;
+         	height: 100%;
          }   
       </style>
    </head>
@@ -69,7 +69,7 @@
          </div>
       </div>
       <div id="dialog">
-         <div id="map"></div>
+         <!-- <div id="map"></div> -->
       </div>
    </body>
    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
@@ -80,7 +80,7 @@
    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAIXOVEcrFF2yOwYxAB6ua5h11wBZftPCw&callback=initMap"></script>
    <script type="text/javascript">
       function initMap() {
-      	var map = new google.maps.Map(document.getElementById('map'), {
+      	var map = new google.maps.Map(document.getElementById('dialog'), {
       		zoom : 8,
       		center : {
       			lat : 40.72,
@@ -89,7 +89,8 @@
       	});
       	var geocoder = new google.maps.Geocoder;
       	var infowindow = new google.maps.InfoWindow;
-      	$( "a[class='eventClass']" ).on('click', function() {
+      	$( "a[class='eventClass']" ).on('click', function(e) {
+      		e.preventDefault();
      		placeId = $(this).attr('id');			
       		$("#dialog").dialog({
       			modal: true,
