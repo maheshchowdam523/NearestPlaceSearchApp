@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+   <head>
+      <meta charset="ISO-8859-1">
+      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+      <link rel="stylesheet" href="https://cdn.datatables.net/1.10.16/css/dataTables.bootstrap.min.css">	
+      <title>Nearest Places</title>
+      <style>
+	td.breakiing{
+		word-wrap: break-word;
+	}      
+      </style>
+   </head>
+   <body>
+      <div class="container-fluid">
+         <form class="form-narrow form-horizontal" action="#" method="post" th:action="@{/getDetails}" th:object="${dataObject}">
+            <div class="row form-group text-center">
+               <h3>Nearest Place Search</h3>
+            </div>
+            <div class="row form-group">
+               <div class="col-sm-2">
+                  <label for="#">Type of Place</label>
+               </div>
+               <div class="col-sm-3">
+                  <input type="text" class="form-control" placeholder="Temple/Parks/Hotel" th:field="*{placeType}" required />
+               </div>
+            </div>
+            <div class="row form-group">
+               <div class="col-sm-2">
+                  <label for="#">City/Location</label>
+               </div>
+               <div class="col-sm-3" >
+                  <input type="text" class="form-control"  placeholder="Hyderabad/Delhi" th:field="*{city}" required />
+               </div>
+            </div>
+            <div class="col-sm-2"></div>
+            <div>
+               <input name="Submit" type="submit" value="Submit" class="btn add-btn btn-primary" />
+               <input name="Reset" type="reset" value="reset" class="btn add-btn btn-primary" />
+            </div>
+         </form>
+         <div>
+         	<h3 class="text-center text-danger" th:unless="${noResults == null}" th:text="${noResults}"></h3>
+         	<div th:if="${null != MapData && !MapData.isEmpty()}">
+         		<table class="data-table table table-hover display nowrap" id="resultTable" style="table-layout:fixed">
+         			<thead>
+         				<th class="col-sm-3">Name</th>
+         				<th class="col-sm-3">Address</th>
+         				<th class="col-sm-1">Rating</th>
+         				<th class="col-sm-2">Types</th>
+         				<th class="col-sm-1">Location</th>
+         			</thead>
+         			<tbody>
+         				<tr th:each="results : ${MapData}">
+         					<td class="breakiing" th:text="${results.name}"></td>
+         					<td class="breakiing" th:text="${results.formatted_address}"></td>
+         					<td th:text="${results.rating}"></td>
+         					<!-- <td th:text="${#strings.substring(results.types,1, #strings.length(results.types)-1)}"></td> -->
+         					<td><ul th:if="${null != results.types && !results.types.isEmpty()}" th:each="type : ${results.types}"><li th:text="${type}"></li></ul></td>
+         					<td th:id="'show_'+${results.place_id}"><a href="#" th:valuee="${results.place_id}" th:onclick="'showOnMap(\'' + ${results.place_id}+ '\');'">View on Map</a></td>
+         				</tr>
+         			</tbody>       		
+         		</table>
+         	</div>
+         </div>
+      </div>
+      <div id="map"></div>
+   </body>
+   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+   <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+   <script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
+   <script src="https://cdn.datatables.net/1.10.16/js/dataTables.bootstrap.min.js"></script>   
+   <script type="text/javascript">
+   $(document).ready(function() {
+    	$('#resultTable').DataTable();
+	});
+   function initMap() {
+       var map = new google.maps.Map(document.getElementById('map'), {
+         zoom: 8,
+         center: {lat: 40.72, lng: -73.96}
+       });
+       var geocoder = new google.maps.Geocoder;
+       var infowindow = new google.maps.InfoWindow;
+
+       document.getElementById('submit').addEventListener('click', function() {
+         geocodePlaceId(geocoder, map, infowindow);
+       });
+     }
+   function geocodePlaceId(geocoder, map, infowindow, placeId) {
+	   geocoder.geocode({'placeId': placeId}, function(results, status) {
+	     if (status === 'OK') {
+	       if (results[0]) {
+	         map.setZoom(11);
+	         map.setCenter(results[0].geometry.location);
+	         var marker = new google.maps.Marker({
+	           map: map,
+	           position: results[0].geometry.location
+	         });
+	         infowindow.setContent(results[0].formatted_address);
+	         infowindow.open(map, marker);
+	       } else {
+	         window.alert('No results found');
+	       }
+	     } else {
+	       window.alert('Geocoder failed due to: ' + status);
+	     }
+	   });
+	 } 
+   </script>
+</html>
